@@ -1,63 +1,66 @@
-import React from 'react';
+import { useState } from 'react';
 import FeedbackOptions from './FeedbackOptions';
 import Statistics from './Statistics';
 import Section from './Section';
 
-export class App extends React.Component {
-  state = {
-    good: 0,
-    neutral: 0,
-    bad: 0,
-  };
-  handleIncrement = option => {
-    this.setState(prevState => {
-      return {
-        [option]: prevState[option] + 1,
-      };
-    });
-  };
-  countTotalFeedback = () =>
-    this.state.good + this.state.neutral + this.state.bad;
+export default function App() {
+  const [good, setGood] = useState(0);
+  const [bad, setBad] = useState(0);
+  const [neutral, setNeutral] = useState(0);
+  const options = { good, bad, neutral };
 
-  countPositiveFeedbackPercentage = () => {
-    const total = this.countTotalFeedback();
-    return Math.round((this.state.good * 100) / total || 0);
+  const handleIncrement = option => {
+    switch (option) {
+      case 'good':
+        setGood(prevSt => prevSt + 1);
+        break;
+      case 'bad':
+        setBad(prevSt => prevSt + 1);
+        break;
+      case 'neutral':
+        setNeutral(prevSt => prevSt + 1);
+        break;
+      default:
+        return;
+    }
   };
-  render() {
-    const total = this.countTotalFeedback();
-    const { good, bad, neutral } = this.state;
-    return (
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          fontSize: 40,
-          color: '#010101',
-        }}
-      >
-        <Section title="Please leave feedback">
-          <FeedbackOptions
-            options={Object.keys(this.state)}
-            onLeaveFeedback={this.handleIncrement}
+
+  const countTotalFeedback = good + bad + neutral;
+  const countPositiveFeedbackPercentage = Math.round(
+    (good * 100) / countTotalFeedback || 0
+  );
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        fontSize: 40,
+        color: '#010101',
+      }}
+    >
+      <Section title="Please leave feedback">
+        <FeedbackOptions
+          options={Object.keys(options)}
+          onLeaveFeedback={handleIncrement}
+        />
+      </Section>
+
+      <Section title="Statistics">
+        {countTotalFeedback > 0 ? (
+          <Statistics
+            good={good}
+            neutral={neutral}
+            bad={bad}
+            total={countTotalFeedback}
+            positivePercentage={countPositiveFeedbackPercentage}
           />
-        </Section>
-
-        <Section title="Statistics">
-          {total > 0 ? (
-            <Statistics
-              good={good}
-              neutral={neutral}
-              bad={bad}
-              total={total}
-              positivePercentage={this.countPositiveFeedbackPercentage()}
-            />
-          ) : (
-            <p>There is no feedback</p>
-          )}
-        </Section>
-      </div>
-    );
-  }
+        ) : (
+          <p>There is no feedback</p>
+        )}
+      </Section>
+    </div>
+  );
 }
