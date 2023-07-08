@@ -27,7 +27,16 @@ export class App extends React.Component {
     const total = this.countTotalFeedback();
     const { good, bad, neutral } = this.state;
     return (
-      <div>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          fontSize: 40,
+          color: '#010101',
+        }}
+      >
         <Section title="Please leave feedback">
           <FeedbackOptions
             options={Object.keys(this.state)}
